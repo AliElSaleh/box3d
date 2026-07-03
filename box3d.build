@@ -1,0 +1,123 @@
+Assembly     Box3D
+Type:!shared static_library
+Type:shared  shared_library
+
+Version      0.1.0
+Description  A 3D physics engine for games
+
+option.simd(on off)             Disable SIMD math (slower)
+option.warning_as_error(off on) Compile warnings as errors
+option.double_precision(off on) Enable double precision for large worlds
+option.validate(off on)         Enable validation
+
+"Box3D on %Compiler %Compiler.Version"
+
+if clang|gcc
+{
+    Compiler.Flags -std=c17
+}
+
+if mingw|apple|unix
+{
+    Compiler.Flags -ffp-contract=off
+}
+
+SourceDirectory       src
+BuildDirectory        build
+IntermediateDirectory intermediate
+
+SourceFiles
+[
+	aabb.c
+	aabb.h
+	algorithm.h
+	arena_allocator.c
+	arena_allocator.h
+	bitset.c
+	bitset.h
+	block_allocator.c
+	block_allocator.h
+	body.c
+	body.h
+	broad_phase.c
+	broad_phase.h
+	capsule.c
+	compound.c
+	compound.h
+	constraint_graph.c
+	constraint_graph.h
+	contact.c
+	contact.h
+	contact_solver.c
+	contact_solver.h
+	container.h
+	convex_manifold.c
+	core.c
+	core.h
+	ctz.h
+	distance.c
+	distance_joint.c
+	dynamic_tree.c
+	height_field.c
+	hull.c
+	id_pool.c
+	id_pool.h
+	island.c
+	island.h
+	joint.c
+	joint.h
+	manifold.c
+	manifold.h
+	math_functions.c
+	math_internal.h
+	mesh.c
+	mesh_contact.c
+	motor_joint.c
+	mover.c
+	parallel_for.c
+	parallel_for.h
+	parallel_joint.c
+]
+
+Includes
+[
+	include
+]
+
+if warnings_as_errors
+{
+    if clang|gcc
+    {
+        Compiler.Flags -Werror
+    }
+}
+
+if validate
+{
+    "Box3D validation ON"
+    Defines BOX3D_VALIDATE
+}
+
+if !simd
+{
+    "Box3D SIMD disabled"
+    Defines BOX3D_DISABLE_SIMD
+} 
+
+if double_precision
+{
+    "Box3D double precision ON"
+    # PUBLIC: consumers must see the same precision mode in the headers or they cannot match the ABI
+    Defines BOX3D_DOUBLE_PRECISION
+    Defines.Public BOX3D_DOUBLE_PRECISION
+}
+
+if msvc
+{
+    if shared
+    {
+        # this is needed by DLL users to import Box3D symbols
+        Defines BOX3D_DLL
+    }
+}
+

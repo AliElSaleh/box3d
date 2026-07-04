@@ -1,0 +1,37 @@
+Assembly     imgui
+Type         static_library
+Version      1.92.7
+Description  Dear ImGui
+
+# fetch the pinned release on first build
+if !imgui/
+{
+    PreDepend.Cmd git clone --depth 1 --branch v1.92.7 https://github.com/ocornut/imgui.git imgui
+}
+
+SourceDirectory       imgui
+BuildDirectory        Build
+IntermediateDirectory Intermediate/imgui
+
+# the five core sources; sokol_imgui is the backend, so no glfw/opengl3 backend sources
+SourceFiles
+[
+    imgui.cpp
+    imgui_draw.cpp
+    imgui_tables.cpp
+    imgui_widgets.cpp
+    imgui_demo.cpp
+]
+
+Compiler.Includes imgui
+Compiler.Includes.Export imgui
+
+if msvc
+{
+    Compiler.Flags /std:c++20 /EHsc
+}
+
+if clang|gcc
+{
+    Compiler.Flags -std=c++20
+}

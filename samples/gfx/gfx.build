@@ -1,0 +1,52 @@
+Assembly     gfx
+Type         static_library
+Description  Box3D samples renderer (sokol backend)
+
+BuildDirectory        Build
+IntermediateDirectory Intermediate
+
+# source discovery cannot reach above SourceDirectory, so root it at the samples
+# dir: every .c under it is renderer/backend code (gfx/*.c + host/sokol_app_impl.c),
+# while the samples app itself is pure C++. This keeps C and C++ in separate
+# modules so each gets the right -std flag.
+SamplesDirectory ..
+SourceDirectory $SamplesDirectory
+
+SourceFiles *.c
+
+Compiler.Includes
+[
+    ..
+    ../shaders/generated
+    ../../include
+    ../../extern/sokol
+]
+
+if windows
+{
+    Compiler.Defines SOKOL_D3D11
+}
+
+if apple
+{
+    Compiler.Defines SOKOL_METAL
+
+    # sokol's Metal/Cocoa backend is Objective-C: compile these C files as ObjC with ARC
+    sokol_impl.c.Compiler.Flags     -x objective-c -fobjc-arc
+    sokol_app_impl.c.Compiler.Flags -x objective-c -fobjc-arc
+}
+
+if linux
+{
+    Compiler.Defines SOKOL_GLCORE
+}
+
+if clang|gcc
+{
+    Compiler.Flags -std=c17
+}
+
+if msvc
+{
+    Compiler.Flags /std:c17
+}

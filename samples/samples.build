@@ -1,0 +1,91 @@
+Assembly     Samples
+Description  Box3D samples app
+
+"Box3D Samples on %Compiler %Compiler.Version"
+
+if build_shaders|rebuild_all
+{
+    # regenerate shader headers before gfx compiles against them. The fetch has
+    # to happen here rather than in shaders.build: a module's Compiler.Path
+    # (sokol-shdc) is validated when its file is parsed, and our PreDepend runs
+    # before any dependency is parsed. Shallow-fetched at the commit the old
+    # CMake build pinned; the binaries build from the committed headers without it.
+    if !../extern/sokol-tools-bin/bin/
+    {
+        PreDepend.Cmd git init ../extern/sokol-tools-bin
+        PreDepend.Cmd git -C ../extern/sokol-tools-bin fetch --depth 1 https://github.com/floooh/sokol-tools-bin.git 1a9a4e54090fec42c5d13169b638f09f25474953
+        PreDepend.Cmd git -C ../extern/sokol-tools-bin checkout --force FETCH_HEAD
+    }
+
+    Depend shaders shaders
+}
+
+Depend gfx/
+Depend ../shared/
+Depend implot ../extern
+Depend imgui  ../extern
+Depend nfd    ../extern
+
+Depend ../box3d.build | %%double_precision
+
+BuildDirectory        Build
+IntermediateDirectory Intermediate
+
+SourceFiles
+[
+    main.cpp
+    sample.cpp
+    sample_*.cpp
+    mesh_loader.cpp
+
+    # Host
+    host/camera.cpp
+    host/gui.cpp
+    host/imgui_impl.cpp
+]
+
+Compiler.Includes
+[
+    .
+    ../data
+     ../extern/sokol
+    shaders/generated
+]
+
+if windows
+{
+    Compiler.Defines SOKOL_D3D11
+
+    Libraries d3d11 dxgi dxguid user32 gdi32 shell32 ole32 uuid winmm
+
+    Linker.Subsystem Console
+}
+
+if apple
+{
+    Compiler.Defines SOKOL_METAL
+    Frameworks Foundation Cocoa QuartzCore Metal MetalKit
+}
+
+if linux
+{
+    Compiler.Defines SOKOL_GLCORE
+    Libraries GL X11 Xi Xcursor pthread dl m
+}
+
+if msvc
+{
+    Compiler.Flags /std:c++20 /EHsc
+}
+
+if clang|gcc
+{
+    Compiler.Flags -std=c++20
+}
+
+# launch from the repo root so the samples find data/meshes at runtime
+.Run | ..
+
+option.double_precision Enable double precision for large worlds
+option.build_shaders    Recompile the .glsl shaders with sokol-shdc (downloads the shader compiler on first use)
+

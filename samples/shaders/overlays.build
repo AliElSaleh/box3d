@@ -1,0 +1,45 @@
+# The overlay shaders, compiled exactly like shaders.build but with an
+# overlay_ prefix on the outputs so line.glsl / point.glsl become
+# overlay_line.glsl.h / overlay_point.glsl.h (the names gfx/overlay.c includes).
+
+Assembly.Prefix overlay_
+Type            object
+
+SourceDirectory overlays
+SourceFiles     *.glsl
+
+BuildDirectory        Build
+IntermediateDirectory Intermediate/. # "/." here means to dump it all in one directory
+
+# emit flat into the committed generated/ directory
+Compiler.ObjectDirectory generated
+
+ToolsDir %_WorkingDirectory/../../extern/sokol-tools-bin
+
+if windows
+{
+    Compiler $ToolsDir/bin/win32/sokol-shdc.exe
+}
+
+if apple
+{
+    if arm64
+    {
+        Compiler $ToolsDir/bin/osx_arm64/sokol-shdc
+    }
+    else
+    {
+        Compiler $ToolsDir/bin/osx/sokol-shdc
+    }
+}
+
+if linux
+{
+    Compiler $ToolsDir/bin/linux/sokol-shdc
+}
+
+# sokol-shdc --input <shader.glsl> --slang ... --output generated/overlay_<name>.glsl.h
+Extension            glsl.h
+Compiler.CompileFlag --input
+Compiler.OutputFlag  --output
+Compiler.Flags       --slang hlsl5:metal_macos:glsl430

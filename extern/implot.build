@@ -1,0 +1,41 @@
+Assembly     implot
+Type         static_library
+Version      0.17
+Description  ImPlot plotting widgets for Dear ImGui
+
+# fetch the pinned release on first build
+if !implot/
+{
+    PreDepend.Cmd git clone --depth 1 --branch v0.17 https://github.com/epezent/implot.git implot
+}
+
+# implot compiles against imgui headers and may build before imgui.build runs
+# (it is listed first so its symbols resolve left to right on unix linkers)
+if !imgui/
+{
+    PreDepend.Cmd git clone --depth 1 --branch v1.92.7 https://github.com/ocornut/imgui.git imgui
+}
+
+SourceDirectory       implot
+BuildDirectory        Build
+IntermediateDirectory Intermediate/implot
+
+SourceFiles
+[
+    implot.cpp
+    implot_items.cpp
+    implot_demo.cpp
+]
+
+Compiler.Includes        imgui implot
+Compiler.Includes.Export imgui implot
+
+if msvc
+{
+    Compiler.Flags /std:c++20 /EHsc
+}
+
+if clang|gcc
+{
+    Compiler.Flags -std=c++20
+}

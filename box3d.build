@@ -6,15 +6,20 @@ Version      0.1.0
 Description  A 3D physics engine for games
 
 option.simd(on off)             Disable SIMD math (slower)
-option.warning_as_error(off on) Compile warnings as errors
-option.double_precision(off on) Enable double precision for large worlds
-option.validate(off on)         Enable validation
+option.warning_as_error         Compile warnings as errors
+option.double_precision         Enable double precision for large worlds
+option.validate                 Enable validation
 
 "Box3D on %Compiler %Compiler.Version"
 
 if clang|gcc
 {
     Compiler.Flags -std=c17
+}
+
+if msvc
+{
+    Compiler.Flags /std:c17
 }
 
 if mingw|apple|unix
@@ -60,6 +65,7 @@ SourceFiles
 	dynamic_tree.c
 	height_field.c
 	hull.c
+	hull_map.h
 	id_pool.c
 	id_pool.h
 	island.c
@@ -77,12 +83,44 @@ SourceFiles
 	parallel_for.c
 	parallel_for.h
 	parallel_joint.c
+	physics_world.c
+	physics_world.h
+	platform.h
+	prismatic_joint.c
+	qsort.h
+	recording.c
+	recording.h
+	recording_replay.c
+	recording_replay.h
+	revolute_joint.c
+	scheduler.c
+	scheduler.h
+	sensor.c
+	sensor.h
+	shape.c
+	shape.h
+	simd.c
+	simd.h
+	solver.c
+	solver.h
+	solver_set.c
+	solver_set.h
+	sphere.c
+	spherical_joint.c
+	table.c
+	table.h
+	timer.c
+	triangle_manifold.c
+	types.c
+	verstable.h
+	weld_joint.c
+	wheel_joint.c
+	world_snapshot.c
+	world_snapshot.h
 ]
 
-Includes
-[
-	include
-]
+Compiler.Includes        include
+Compiler.Includes.Export include
 
 if warnings_as_errors
 {
@@ -95,21 +133,20 @@ if warnings_as_errors
 if validate
 {
     "Box3D validation ON"
-    Defines BOX3D_VALIDATE
+    Compiler.Defines BOX3D_VALIDATE
 }
 
 if !simd
 {
     "Box3D SIMD disabled"
-    Defines BOX3D_DISABLE_SIMD
+    Compiler.Defines BOX3D_DISABLE_SIMD
 } 
 
 if double_precision
 {
     "Box3D double precision ON"
-    # PUBLIC: consumers must see the same precision mode in the headers or they cannot match the ABI
-    Defines BOX3D_DOUBLE_PRECISION
-    Defines.Public BOX3D_DOUBLE_PRECISION
+    Compiler.Defines        BOX3D_DOUBLE_PRECISION
+    Compiler.Defines.Export BOX3D_DOUBLE_PRECISION
 }
 
 if msvc
@@ -117,7 +154,7 @@ if msvc
     if shared
     {
         # this is needed by DLL users to import Box3D symbols
-        Defines BOX3D_DLL
+        Compiler.Defines BOX3D_DLL
     }
 }
 

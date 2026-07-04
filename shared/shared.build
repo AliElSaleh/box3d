@@ -1,0 +1,26 @@
+Assembly     shared
+Type         static_library
+Description  Shared code for samples, benchmarks, and unit tests
+
+BuildDirectory        Build
+IntermediateDirectory Intermediate
+
+SourceFiles *.c
+
+Compiler.Includes
+[
+    .
+    ../include
+]
+
+Compiler.Includes.Export .
+
+if clang|gcc
+{
+    Compiler.Flags -std=c17
+}
+
+if msvc
+{
+    Compiler.Flags /std:c17
+}

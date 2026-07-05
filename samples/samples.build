@@ -3,22 +3,19 @@ Description  Box3D samples app
 
 "Box3D Samples on %Compiler %Compiler.Version"
 
-if build_shaders|rebuild_all
+# regenerate shader headers before gfx compiles against them. The fetch has
+# to happen here rather than in shaders.build: a module's Compiler.Path
+# (sokol-shdc) is validated when its file is parsed, and our PreDepend runs
+# before any dependency is parsed. Shallow-fetched at the commit the old
+# CMake build pinned; the binaries build from the committed headers without it.
+if !../extern/sokol-tools-bin/bin/
 {
-    # regenerate shader headers before gfx compiles against them. The fetch has
-    # to happen here rather than in shaders.build: a module's Compiler.Path
-    # (sokol-shdc) is validated when its file is parsed, and our PreDepend runs
-    # before any dependency is parsed. Shallow-fetched at the commit the old
-    # CMake build pinned; the binaries build from the committed headers without it.
-    if !../extern/sokol-tools-bin/bin/
-    {
-        PreDepend.Cmd git init ../extern/sokol-tools-bin
-        PreDepend.Cmd git -C ../extern/sokol-tools-bin fetch --depth 1 https://github.com/floooh/sokol-tools-bin.git 1a9a4e54090fec42c5d13169b638f09f25474953
-        PreDepend.Cmd git -C ../extern/sokol-tools-bin checkout --force FETCH_HEAD
-    }
-
-    Depend shaders shaders
+    PreDepend.Cmd git init ../extern/sokol-tools-bin
+    PreDepend.Cmd git -C ../extern/sokol-tools-bin fetch --depth 1 https://github.com/floooh/sokol-tools-bin.git 1a9a4e54090fec42c5d13169b638f09f25474953
+    PreDepend.Cmd git -C ../extern/sokol-tools-bin checkout --force FETCH_HEAD
 }
+
+Depend shaders shaders
 
 Depend gfx/
 Depend ../shared/

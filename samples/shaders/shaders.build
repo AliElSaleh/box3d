@@ -28,7 +28,7 @@ IntermediateDirectory Intermediate/.
 # emit flat into the committed generated/ directory
 Compiler.ObjectDirectory generated
 
-ToolsDir %_WorkingDirectory/../../extern/sokol-tools-bin
+ToolsDir &WorkingDirectory/../../extern/sokol-tools-bin
 
 if windows
 {

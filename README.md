@@ -60,6 +60,7 @@ This uses the presets in `CMakePresets.json`.
 - Windows: `cmake --preset windows` then `cmake --build --preset windows-release`
 - Linux: `cmake --preset linux-release` then `cmake --build --preset linux-release`
 - macOS: `cmake --preset macos` then `cmake --build --preset macos-release`
+- Windows MinGW: `cmake --preset mingw-release` then `cmake --build --preset mingw-release`
 
 Run the samples app (must be in the Box3D directory).
 
@@ -86,6 +87,14 @@ Run the samples app (must be in the Box3D directory).
 - Open `box3d.xcodeproj`
 - Select the samples scheme
 - Build and run the samples
+
+## Building for Web
+
+- [Emscripten SDK](https://emscripten.org/docs/getting_started/downloads.html)
+- `emcmake cmake -B build -DBOX3D_SAMPLES=OFF`
+- `cmake --build build`
+
+Box3D uses SSE2 with WebAssembly. Define `BOX3D_DISABLE_SIMD` to disable SSE2.
 
 ## Building and installing
 
@@ -138,7 +147,7 @@ You will need a compiler that supports C17 to build the Box3D library.
 
 You will need a compiler that supports C++20 to build the samples.
 
-Box3D uses SSE2 and Neon SIMD math to improve performance. This can be disabled by defining `BOX3D_DISABLE_SIMD`.
+Box3D uses SSE2 and Neon SIMD math to improve performance. SIMD can be disabled by defining `BOX3D_DISABLE_SIMD`.
 
 ## Documentation
 

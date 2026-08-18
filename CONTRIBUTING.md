@@ -15,6 +15,8 @@ before opening a pull request — **PRs that skip these steps will be closed.**
    check enforces this.
 4. **Follow the style.** C17, no compiler warnings, formatted with
    `clang-format`.
+5. **Comments** Comment your code with human words. Create Doxygen comments for public APIs.
+6. **Follow the LLM guidelines.** See the LLM guidelines in README.md
 
 ---
 
@@ -94,7 +96,13 @@ conventions and use clang format.
 
 ---
 
+## 6. LLM Policy
+
+- Follow the LLM policy in README.md
+
+---
+
 ## Questions?
 
 Open a [Discussion](../../discussions) — that's the best place for anything not
-covered here. Thanks for helping make PROJECT_NAME better!
+covered here. Thanks for helping make Box3D better!
